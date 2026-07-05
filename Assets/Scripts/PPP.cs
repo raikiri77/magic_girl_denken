@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PPP : MonoBehaviour
@@ -11,10 +13,14 @@ public class PPP : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Vector2 groundCheckSize = new Vector2(0.5f, 0.1f);
 
+    [Header("ショット")]
+    [SerializeField] private GameObject shotPrefab;
+
     private Rigidbody2D rb;
     private float horizontalInput;
     private bool isGrounded;
     private bool jumpRequested;
+    private bool shotCan=true;
 
     void Start()
     {
@@ -31,6 +37,13 @@ public class PPP : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             jumpRequested = true;
+        }
+
+        // 2. ジャンプの入力受付（Update内で行うことで入力の取りこぼしを防ぐ）
+        if (Input.GetKeyDown(KeyCode.X)&&shotCan)
+        {
+            shotCan = false;
+            StartCoroutine(Shot());
         }
     }
 
@@ -58,5 +71,12 @@ public class PPP : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
         }
+    }
+
+    IEnumerator Shot()
+    {
+        GameObject shot = Instantiate(shotPrefab,this.transform.position, this.transform.rotation);
+        yield return new WaitForSeconds(1);
+        shotCan = true;
     }
 }
