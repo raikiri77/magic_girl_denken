@@ -17,30 +17,45 @@ public class PPP : MonoBehaviour
     [SerializeField] private GameObject shotPrefab;
 
     private Rigidbody2D rb;
+    private Animator animator; // ★Animatorコンポーネント用の変数を追加
     private float horizontalInput;
     private bool isGrounded;
     private bool jumpRequested;
-    private bool shotCan=true;
+    private bool shotCan = true;
 
     void Start()
     {
         // 自身のRigidbody2Dを取得
         rb = GetComponent<Rigidbody2D>();
+
+        // ★自身のAnimatorを取得
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
-        // 1. 左右の入力受付（Edit > Project Settings > Input Managerの決定に従う）
+        // 1. 左右の入力受付
         horizontalInput = Input.GetAxisRaw("Horizontal");
 
-        // 2. ジャンプの入力受付（Update内で行うことで入力の取りこぼしを防ぐ）
+        // ★左右の向き（反転）の処理を呼び出す
+        FlipCharacter();
+
+        // ★Animatorの「stand」パラメータを制御
+        // 条件：地面に足がついていて（isGrounded）、かつ移動入力がない（horizontalInputが0）とき
+        if (animator != null)
+        {
+            bool isStanding = isGrounded && (horizontalInput == 0f);
+            animator.SetBool("stand", isStanding);
+        }
+
+        // 2. ジャンプの入力受付
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             jumpRequested = true;
         }
 
-        // 2. ジャンプの入力受付（Update内で行うことで入力の取りこぼしを防ぐ）
-        if (Input.GetKeyDown(KeyCode.X)&&shotCan)
+        // ショットの入力受付
+        if (Input.GetKeyDown(KeyCode.X) && shotCan)
         {
             shotCan = false;
             StartCoroutine(Shot());
@@ -49,7 +64,7 @@ public class PPP : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 3. 接地判定（足元に地面があるかチェック）
+        // 3. 接地判定
         isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
 
         // 4. 左右移動の物理演算
@@ -60,6 +75,23 @@ public class PPP : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpRequested = false;
+        }
+    }
+
+    // ★入力に応じてキャラクターの左右の向きを反転させるメソッド
+    private void FlipCharacter()
+    {
+        // 右を入力していて、画像が左を向いている（あるいは初期状態）場合
+        if (horizontalInput > 0f && transform.localScale.x < 0f)
+        {
+            // スケールを正（右向き）にする
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
+        // 左を入力していて、画像が右を向いている場合
+        else if (horizontalInput < 0f && transform.localScale.x > 0f)
+        {
+            // スケールを負（左向き）にする
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
     }
 
@@ -75,7 +107,7 @@ public class PPP : MonoBehaviour
 
     IEnumerator Shot()
     {
-        GameObject shot = Instantiate(shotPrefab,this.transform.position, this.transform.rotation);
+        GameObject shot = Instantiate(shotPrefab, this.transform.position, this.transform.rotation);
         yield return new WaitForSeconds(1);
         shotCan = true;
     }
