@@ -15,6 +15,7 @@ public class PPP : MonoBehaviour
 
     [Header("ショット")]
     [SerializeField] private GameObject shotPrefab;
+    [SerializeField] private int shotMpCost = 10;
 
     private Rigidbody2D rb;
     private Animator animator; // ★Animatorコンポーネント用の変数を追加
@@ -22,6 +23,8 @@ public class PPP : MonoBehaviour
     private bool isGrounded;
     private bool jumpRequested;
     private bool shotCan = true;
+
+    [SerializeField] private MpManager mpManager;
 
     void Start()
     {
@@ -57,8 +60,7 @@ public class PPP : MonoBehaviour
         // ショットの入力受付
         if (Input.GetKeyDown(KeyCode.X) && shotCan)
         {
-            shotCan = false;
-            StartCoroutine(Shot());
+            TryShot();
         }
     }
 
@@ -78,6 +80,19 @@ public class PPP : MonoBehaviour
         }
     }
 
+    private void TryShot()
+    {
+        if (mpManager == null)
+        {
+            return; 
+        }
+        if (mpManager.ConsumeMp(shotMpCost))
+        {
+            shotCan = false;
+            StartCoroutine(Shot());
+        }
+
+    }
     // ★入力に応じてキャラクターの左右の向きを反転させるメソッド
     private void FlipCharacter()
     {
