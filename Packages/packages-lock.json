@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.raikiri77.magic_girlver2.1": {
+      "version": "file:com.raikiri77.magic_girlver2.1",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.test-framework": "1.6.0"
+      }
+    },
     "com.unity.2d.animation": {
       "version": "14.0.4",
       "depth": 0,

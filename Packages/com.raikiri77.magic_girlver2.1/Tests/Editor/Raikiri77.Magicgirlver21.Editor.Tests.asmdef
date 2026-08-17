@@ -1,0 +1,14 @@
+{
+    "name": "Raikiri77.Magicgirlver21.Editor.Tests",
+    "references": [
+        "Raikiri77.Magicgirlver21.Editor",
+        "Raikiri77.Magicgirlver21"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

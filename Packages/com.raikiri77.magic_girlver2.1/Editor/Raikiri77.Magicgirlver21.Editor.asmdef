@@ -1,0 +1,10 @@
+{
+    "name": "Raikiri77.Magicgirlver21.Editor",
+    "references": [
+      "Raikiri77.Magicgirlver21"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}
